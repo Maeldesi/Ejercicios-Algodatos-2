@@ -1,0 +1,116 @@
+#include <stdio.h>
+#include <assert.h>
+#include <stdbool.h>
+#define N 5
+void elegir(char board[N][N], int elec, char jugad){
+    printf("Jugador %c, ingrese la casilla: ", jugad);
+        scanf("%d", &elec);
+        elec--;
+        int i = 0;
+        while(elec >= N){
+            elec = elec-N;
+            i++;
+        }
+        board[elec][i] = jugad;
+}
+void imprimirtabla(char board[N][N]){
+    int i = 0, j;
+    while(i < N){
+        printf("{ ");
+        j = 0;
+        while(j < N){
+            printf("%c ", board[j][i]);
+            j++;
+        }
+        printf("}\n");
+        i++;
+    }
+}
+bool celdalibre(char board[N][N]){
+    bool si = false;
+    for (int i = 0; i<N; i++){
+        for (int j = 0; j<N; j++){
+            si = board[i][j] == '-' || si;
+        }
+    }
+    return si;
+}
+bool empate(bool hola){
+    bool jugar = true;
+    if (!hola){
+        printf("El juego terminó en un empate\n");
+        jugar = false;
+    }
+    return jugar;
+}
+char get_winner(char board[N][N]){
+    char gan = '-';
+    bool colx = true, col0 = true, filx = true, fil0 = true, diagx=true, diag0=true, diagox =true, diago0 = true;
+    for (int i = 0; i<N; i++){
+        colx = true;
+        col0 = true; 
+        filx = true; 
+        fil0 = true;
+        diago0 = true;
+        diagox = true;
+        diagx = true;
+        diag0 = true;
+        for (int j = 0; j<N; j++){
+            colx = (board[i][j]=='X' && colx);
+            col0 = (board[i][j]=='O' && col0);
+            filx = (board[j][i]=='X' && filx);
+            fil0 = (board[j][i]=='O' && fil0);
+            diagx = (board[j][j]=='X' && diagx);
+            diag0 = (board[j][j]=='O' && diag0);
+            diagox = (board[j][N-1-j] == 'X' && diagox);
+            diago0 = (board[j][N-1-j] == 'O' && diago0);
+        }
+        if(colx || filx){
+            gan = 'X';
+        }
+        if(col0 || fil0){
+            gan = 'O';
+        }
+        if(diagox || diagx){
+            gan = 'X';
+        }
+        if(diago0 || diag0){
+            gan = 'O';
+        }
+    }
+    return gan;
+}
+
+int main(){
+    bool juego = true;
+    char gan = '-';
+    int jugador = 1;
+    char board[N][N];
+    for( int i=0; i<N; i++){
+        for(int j=0; j<N; j++){
+            board[i][j]= '-';
+        }
+    }
+    int elec = 0;
+    printf("Bienvenidos a tatetí, las casillas están numeradas del 1 al %d \n", N*N);
+    while (juego){
+        if(jugador == 1){
+            elegir(board, elec, 'X');
+            jugador = 2;
+        }
+        else{
+            elegir(board, elec, 'O');
+            jugador = 1;
+        }
+        imprimirtabla(board);
+        gan = get_winner(board);
+        if (gan != '-'){
+            printf("El jugador %c ganó\n", gan);
+            juego = false;
+        }
+        else {
+            juego = empate(celdalibre(board));
+        }
+    }
+    return 0;
+}
